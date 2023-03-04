@@ -1,5 +1,6 @@
 #include "SFML/Graphics.hpp"
 #include "SFML/Audio.hpp"
+#include <iostream>
 #define MENU_SIZE 3
 #define START_BUTTON 0
 #define OPTIONS_BUTTON 1
@@ -11,8 +12,6 @@ using namespace sf;
 int main()
 {
 	string options[MENU_SIZE] = {"START", "OPTIONS", "EXIT"};
-
-
 
 	RenderWindow window(VideoMode(1920, 1080), "SFML");
 	window.setFramerateLimit(120);
@@ -32,33 +31,38 @@ int main()
 
 	RectangleShape volume(Vector2f(200, 20));
 	volume.setPosition(850, 540);
+	
 
-
-
-	Texture Tbackground, Tkey, Tcoin, tbutton;
+	Texture Tbackground, Tkey, Tcoin, tbutton, tslider;
 	Tbackground.loadFromFile("SFMLProject2.png");
 	Tkey.loadFromFile("key2.png");
 	Tcoin.loadFromFile("spinning coin2.png");
 	tbutton.loadFromFile("button_ui.png");
+	tslider.loadFromFile("slider.png");
 
-	Sprite background(Tbackground), key(Tkey, IntRect(0, 0, 39, 39)), coin(Tcoin, IntRect(0, 0, 26, 22));
+	Sprite slider(tslider), background(Tbackground), key(Tkey, IntRect(0, 0, 39, 39)), coin(Tcoin, IntRect(0, 0, 26, 22));
 	background.setPosition(Vector2f(0, 250));
 	key.setPosition(790, 555);
 	coin.setPosition(1290, 590);
+	slider.setPosition(850, 540);
+
 	float xKey = 0, yKey = 0, delayKey = 0.075;
 	float xCoin = 0, yCoin = 0, delayCoin = 0.065;
-
-
-	Sprite button[3];
+	
+	Sprite button [4];
 	for (int i = 0; i < 3; i++)
 	{
 		button[i].setTexture(tbutton);
 		button[i].setScale(2, 2);
 		button[i].setPosition(850, 400 + 200 * i);
 	}
+	button[3].setTexture(tbutton);
+	button[3].setScale(2, 2);
+	button[3].setPosition(400, 520);
 
-	Font font;
+	Font font, font2;
 	font.loadFromFile("Nightmare_Before_Christmas.ttf");
+	font2.loadFromFile("times-new-roman.ttf");
 
 
 
@@ -72,9 +76,17 @@ int main()
 		Menu[i].setPosition((i == 0 ? 910 : 900), 400 + 200 * i);
 		Menu[i].setFillColor(Color::White);
 	}
+	Text volumeb;
+	volumeb.setFont(font);
+	volumeb.setCharacterSize(60);
+	volumeb.setString("VOLUME");
+	volumeb.setPosition(435, 520);
+	volumeb.setFillColor(Color::Green);
+
 
 	Music music;
 	music.openFromFile("Dame Tu Tormento.wav");
+	music.play();
 
 	int cnt = 0, select = 1;
 	bool started = false, paused = false, options_status = 0;
@@ -93,10 +105,25 @@ int main()
 		{
 			if (options_status)
 			{
+
 				window.clear();
+				window.draw(slider);
 				window.draw(volume);
+				window.draw(button[3]);
+				window.draw(volumeb);
 				if (Keyboard::isKeyPressed(Keyboard::Key::Escape))
 					options_status = false;
+
+				if(Mouse::isButtonPressed(Mouse::Left))
+				{ 
+
+					Vector2i mousePos = Mouse::getPosition(window);
+					if (mousePos.x >= 850 && mousePos.x <= 1050 && mousePos.y >= 540 && mousePos.y <= 550)
+					{
+						volume.setSize(Vector2f(200 - (1050 - mousePos.x), 20));
+						music.setVolume(0.5 * volume.getSize().x);
+					}
+				}
 			}
 
 			else if (select == 1) 
@@ -163,7 +190,11 @@ int main()
 		else if (started && !paused)
 		{
 			if (Keyboard::isKeyPressed(Keyboard::Key::Escape))
-				paused = 1;
+			{
+				paused = true;
+				continue;
+			}
+
 
 
 			xKey += delayKey;
@@ -188,16 +219,31 @@ int main()
 			window.draw(coin);
 		}
 		
-		else if (paused && started) 
+		else if (paused && started)
 		{
-			
+
 			if (options_status)
 			{
 				window.clear();
+				window.draw(slider);
 				window.draw(volume);
+				window.draw(button[3]);
+				window.draw(volumeb);
 				if (Keyboard::isKeyPressed(Keyboard::Key::Escape))
 					options_status = false;
+
+				if (Mouse::isButtonPressed(Mouse::Left))
+				{
+
+					Vector2i mousePos = Mouse::getPosition(window);
+					if (mousePos.x >= 850 && mousePos.x <= 1050 && mousePos.y >= 540 && mousePos.y <= 550)
+					{
+						volume.setSize(Vector2f(200 - (1050 - mousePos.x), 20));
+						music.setVolume(0.5 * volume.getSize().x);
+					}
+				}
 			}
+
 			if (select == 1) 
 			{
 
