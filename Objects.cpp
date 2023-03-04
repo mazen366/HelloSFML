@@ -60,9 +60,9 @@ int main()
 	button[3].setScale(2, 2);
 	button[3].setPosition(400, 520);
 
-	Font font, font2;
+	Font font;
 	font.loadFromFile("Nightmare_Before_Christmas.ttf");
-	font2.loadFromFile("times-new-roman.ttf");
+
 
 
 
