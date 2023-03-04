@@ -30,12 +30,16 @@ int main()
 	ground4.setPosition(617, 635);
 	ground4.setFillColor(Color::Green);
 
+	RectangleShape volume(Vector2f(200, 20));
+	volume.setPosition(850, 540);
 
-	Texture Tbackground, Tkey, Tcoin, button;
+
+
+	Texture Tbackground, Tkey, Tcoin, tbutton;
 	Tbackground.loadFromFile("SFMLProject2.png");
 	Tkey.loadFromFile("key2.png");
 	Tcoin.loadFromFile("spinning coin2.png");
-	button.loadFromFile("button_ui.png");
+	tbutton.loadFromFile("button_ui.png");
 
 	Sprite background(Tbackground), key(Tkey, IntRect(0, 0, 39, 39)), coin(Tcoin, IntRect(0, 0, 26, 22));
 	background.setPosition(Vector2f(0, 250));
@@ -45,13 +49,13 @@ int main()
 	float xCoin = 0, yCoin = 0, delayCoin = 0.065;
 
 
-	Sprite sbutton1(button), sbutton2(button), sbutton3(button);
-	sbutton1.scale(2, 2);
-	sbutton1.setPosition(850, 400);
-	sbutton2.scale(2, 2);
-	sbutton2.setPosition(850, 600);
-	sbutton3.scale(2, 2);
-	sbutton3.setPosition(850, 800);
+	Sprite button[3];
+	for (int i = 0; i < 3; i++)
+	{
+		button[i].setTexture(tbutton);
+		button[i].setScale(2, 2);
+		button[i].setPosition(850, 400 + 200 * i);
+	}
 
 	Font font;
 	font.loadFromFile("Nightmare_Before_Christmas.ttf");
@@ -72,10 +76,8 @@ int main()
 	Music music;
 	music.openFromFile("Dame Tu Tormento.wav");
 
-	
-
 	int cnt = 0, select = 1;
-	bool started = false, paused = false;
+	bool started = false, paused = false, options_status = 0;
 
 	while (window.isOpen())
 	{
@@ -89,7 +91,15 @@ int main()
 
 		if (!started) 
 		{
-			if (select == 1) 
+			if (options_status)
+			{
+				window.clear();
+				window.draw(volume);
+				if (Keyboard::isKeyPressed(Keyboard::Key::Escape))
+					options_status = false;
+			}
+
+			else if (select == 1) 
 			{
 				Menu[START_BUTTON].setFillColor(Color::Red);
 				Menu[OPTIONS_BUTTON].setFillColor(Color::White);
@@ -107,6 +117,10 @@ int main()
 				Menu[OPTIONS_BUTTON].setFillColor(Color::Red);
 				Menu[START_BUTTON].setFillColor(Color::White);
 				Menu[EXIT_BUTTON].setFillColor(Color::White);
+
+				if (Keyboard::isKeyPressed(Keyboard::Key::Enter))
+					options_status = true;
+
 			}
 			else if (select == 3) 
 			{
@@ -135,12 +149,13 @@ int main()
 				cnt++;
 			}
 			else cnt = 0;
-
-			window.draw(sbutton1);
-			window.draw(sbutton2);
-			window.draw(sbutton3);
-			for (int i = 0; i < 3; i++)
-				window.draw(Menu[i]);
+			if (!options_status)
+			{
+				for (int i = 0; i < 3; i++)
+					window.draw(button[i]);
+				for (int i = 0; i < 3; i++)
+					window.draw(Menu[i]);
+			}
 		}
 
 
@@ -175,6 +190,14 @@ int main()
 		
 		else if (paused && started) 
 		{
+			
+			if (options_status)
+			{
+				window.clear();
+				window.draw(volume);
+				if (Keyboard::isKeyPressed(Keyboard::Key::Escape))
+					options_status = false;
+			}
 			if (select == 1) 
 			{
 
@@ -190,6 +213,9 @@ int main()
 				Menu[OPTIONS_BUTTON].setFillColor(Color::Red);
 				Menu[START_BUTTON].setFillColor(Color::White);
 				Menu[EXIT_BUTTON].setFillColor(Color::White);
+
+				if (Keyboard::isKeyPressed(Keyboard::Key::Enter))
+					options_status = true;
 			}
 			else if (select == 3) 
 			{
@@ -215,14 +241,18 @@ int main()
 				cnt++;
 			}
 			else cnt = 0;
-			window.draw(background);
-			window.draw(key);
-			window.draw(coin);
-			window.draw(sbutton1);
-			window.draw(sbutton2);
-			window.draw(sbutton3);
-			for (int i = 0; i < 3; i++)
-				window.draw(Menu[i]);
+
+			if (!options_status)
+			{
+				window.draw(background);
+				window.draw(key);
+				window.draw(coin);
+
+				for (int i = 0; i < 3; i++)
+					window.draw(button[i]);
+				for (int i = 0; i < 3; i++)
+					window.draw(Menu[i]);
+			}
 		}
 		window.display();
 	}
