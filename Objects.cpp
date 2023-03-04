@@ -63,9 +63,6 @@ int main()
 	Font font;
 	font.loadFromFile("Nightmare_Before_Christmas.ttf");
 
-
-
-
 	Text Menu[MENU_SIZE];
 	
 	for (int i = 0; i < MENU_SIZE; i++)
@@ -185,8 +182,6 @@ int main()
 			}
 		}
 
-
-
 		else if (started && !paused)
 		{
 			if (Keyboard::isKeyPressed(Keyboard::Key::Escape))
@@ -194,8 +189,6 @@ int main()
 				paused = true;
 				continue;
 			}
-
-
 
 			xKey += delayKey;
 			key.setTextureRect(IntRect(short(xKey) * 39, short(yKey) * 39, 39, 39));
