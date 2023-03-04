@@ -33,7 +33,7 @@ int main()
 	RectangleShape volume(Vector2f(200, 20));
 	volume.setPosition(850, 540);
 
-
+	
 
 	Texture Tbackground, Tkey, Tcoin, tbutton;
 	Tbackground.loadFromFile("SFMLProject2.png");
@@ -142,6 +142,7 @@ int main()
 				cnt++;
 
 			}
+			//doctor 
 			else if (Keyboard::isKeyPressed(Keyboard::Key::Up)) 
 			{
 				if (cnt == 0)
