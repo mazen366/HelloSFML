@@ -1,10 +1,18 @@
 #include "SFML/Graphics.hpp"
 #include "SFML/Audio.hpp"
+#define MENU_SIZE 3
+#define START_BUTTON 0
+#define OPTIONS_BUTTON 1
+#define EXIT_BUTTON 2
+
 using namespace std;
 using namespace sf;
 
 int main()
 {
+	string options[MENU_SIZE] = {"START", "OPTIONS", "EXIT"};
+
+
 
 	RenderWindow window(VideoMode(1920, 1080), "SFML");
 	window.setFramerateLimit(120);
@@ -50,31 +58,16 @@ int main()
 
 
 
-	Text start;
-	start.setFont(font);
-	start.setCharacterSize(60);
-	start.setString("START");
-	start.setPosition(860 + 50, 400);
-	start.setFillColor(Color::White);
-
-
-
-	Text options;
-	options.setFont(font);
-	options.setCharacterSize(60);
-	options.setString("OPTIONS");
-	options.setPosition(850 + 50, 600);
-	options.setFillColor(Color::White);
-
-
-	Text exit;
-	exit.setFont(font);
-	exit.setCharacterSize(60);
-	exit.setString("EXIT");
-	exit.setPosition(870 + 50, 800);
-	exit.setFillColor(Color::White);
-
-
+	Text Menu[MENU_SIZE];
+	
+	for (int i = 0; i < MENU_SIZE; i++)
+	{
+		Menu[i].setFont(font);
+		Menu[i].setCharacterSize(60);
+		Menu[i].setString(options[i]);
+		Menu[i].setPosition((i == 0 ? 910 : 900), 400 + 200 * i);
+		Menu[i].setFillColor(Color::White);
+	}
 
 	Music music;
 	music.openFromFile("Dame Tu Tormento.wav");
@@ -98,34 +91,29 @@ int main()
 		{
 			if (select == 1) 
 			{
-				start.setFillColor(Color::Red);
-
-				options.setFillColor(Color::White);
-
-				exit.setFillColor(Color::White);
+				Menu[START_BUTTON].setFillColor(Color::Red);
+				Menu[OPTIONS_BUTTON].setFillColor(Color::White);
+				Menu[EXIT_BUTTON].setFillColor(Color::White);
 
 				if (Keyboard::isKeyPressed(Keyboard::Key::Enter))
 				{
 					started = 1;
-					start.setString("CONTINUE");
-					start.setPosition(890, 400);
+					Menu[START_BUTTON].setString("CONTINUE");
+					Menu[START_BUTTON].setPosition(890, 400);
 				}
 			}
 			else if (select == 2) 
 			{
-				options.setFillColor(Color::Red);
-
-
-				start.setFillColor(Color::White);
-
-				exit.setFillColor(Color::White);
+				Menu[OPTIONS_BUTTON].setFillColor(Color::Red);
+				Menu[START_BUTTON].setFillColor(Color::White);
+				Menu[EXIT_BUTTON].setFillColor(Color::White);
 			}
-			else if (select == 3) {
-				exit.setFillColor(Color::Red);
+			else if (select == 3) 
+			{
+				Menu[EXIT_BUTTON].setFillColor(Color::Red);
+				Menu[START_BUTTON].setFillColor(Color::White);
+				Menu[OPTIONS_BUTTON].setFillColor(Color::White);
 
-				start.setFillColor(Color::White);
-
-				options.setFillColor(Color::White);
 				if (Keyboard::isKeyPressed(Keyboard::Key::Enter)) 
 					window.close();
 
@@ -151,9 +139,8 @@ int main()
 			window.draw(sbutton1);
 			window.draw(sbutton2);
 			window.draw(sbutton3);
-			window.draw(start);
-			window.draw(options);
-			window.draw(exit);
+			for (int i = 0; i < 3; i++)
+				window.draw(Menu[i]);
 		}
 
 
@@ -191,24 +178,24 @@ int main()
 			if (select == 1) 
 			{
 
-				start.setFillColor(Color::Red);
-				options.setFillColor(Color::White);
-				exit.setFillColor(Color::White);
+				Menu[START_BUTTON].setFillColor(Color::Red);
+				Menu[OPTIONS_BUTTON].setFillColor(Color::White);
+				Menu[EXIT_BUTTON].setFillColor(Color::White);
 
 				if (Keyboard::isKeyPressed(Keyboard::Key::Enter)) 
 					paused = 0;
 			}
 			else if (select == 2) 
 			{
-				options.setFillColor(Color::Red);
-				start.setFillColor(Color::White);
-				exit.setFillColor(Color::White);
+				Menu[OPTIONS_BUTTON].setFillColor(Color::Red);
+				Menu[START_BUTTON].setFillColor(Color::White);
+				Menu[EXIT_BUTTON].setFillColor(Color::White);
 			}
 			else if (select == 3) 
 			{
-				exit.setFillColor(Color::Red);
-				start.setFillColor(Color::White);
-				options.setFillColor(Color::White);
+				Menu[EXIT_BUTTON].setFillColor(Color::Red);
+				Menu[START_BUTTON].setFillColor(Color::White);
+				Menu[OPTIONS_BUTTON].setFillColor(Color::White);
 
 				if (Keyboard::isKeyPressed(Keyboard::Key::Enter)) 
 					window.close();
@@ -234,9 +221,8 @@ int main()
 			window.draw(sbutton1);
 			window.draw(sbutton2);
 			window.draw(sbutton3);
-			window.draw(start);
-			window.draw(options);
-			window.draw(exit);
+			for (int i = 0; i < 3; i++)
+				window.draw(Menu[i]);
 		}
 		window.display();
 	}
