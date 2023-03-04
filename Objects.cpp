@@ -24,9 +24,9 @@ int main()
 
 
 	Texture Tbackground, Tkey, Tcoin, button;
-	Tbackground.loadFromFile("D:\SFMLProject2.png");
-	Tkey.loadFromFile("D:\key2.png");
-	Tcoin.loadFromFile("D:\spinning coin2.png");
+	Tbackground.loadFromFile("SFMLProject2.png");
+	Tkey.loadFromFile("key2.png");
+	Tcoin.loadFromFile("spinning coin2.png");
 	button.loadFromFile("button_ui.png");
 
 	Sprite background(Tbackground), key(Tkey, IntRect(0, 0, 39, 39)), coin(Tcoin, IntRect(0, 0, 26, 22));
@@ -74,6 +74,13 @@ int main()
 	exit.setPosition(870 + 50, 800);
 	exit.setFillColor(Color::White);
 
+
+
+	Music music;
+	music.openFromFile("Dame Tu Tormento.wav");
+
+	
+
 	int cnt = 0, select = 1;
 	bool started = false, paused = false;
 
@@ -107,6 +114,7 @@ int main()
 			else if (select == 2) 
 			{
 				options.setFillColor(Color::Red);
+
 
 				start.setFillColor(Color::White);
 
