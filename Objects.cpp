@@ -20,7 +20,7 @@ int main()
 
 	RectangleShape ground4(Vector2f(35, 70));
 	ground4.setPosition(617, 635);
-	ground4.setFillColor(Color::Green);
+	//ground4.setFillColor(Color::Green);
 
 
 	Texture Tbackground, Tkey, Tcoin, button;
