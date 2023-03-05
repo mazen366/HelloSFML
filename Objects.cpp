@@ -37,7 +37,7 @@ int main()
 
 
 
-	Texture Tbackground, Tkey, Tcoin, tbutton, opendoor, tslider, tskeleton[6];
+	Texture Tbackground, Tkey, Tcoin, tbutton, opendoor, tslider, tskeleton[6], Ebutton;
 	Tbackground.loadFromFile("SFMLProject2.png");
 	Tkey.loadFromFile("key2.png");
 	Tcoin.loadFromFile("spinning coin2.png");
@@ -47,10 +47,11 @@ int main()
 	tskeleton[0].loadFromFile("SkeletonIdle.png");
 	tskeleton[1].loadFromFile("SkeletonWalk.png");
 	tskeleton[2].loadFromFile("SkeletonAttack.png");
+	Ebutton.loadFromFile("E.png");
 
 
 
-	Sprite skeleton, slider(tslider), background(Tbackground), key(Tkey, IntRect(0, 0, 39, 39)), coin(Tcoin, IntRect(0, 0, 26, 22)), door(opendoor);
+	Sprite skeleton, slider(tslider), background(Tbackground), key(Tkey, IntRect(0, 0, 39, 39)), coin(Tcoin, IntRect(0, 0, 26, 22)), door(opendoor), E(Ebutton);
 	background.setPosition(Vector2f(0, 250));
 	key.setPosition(790, 555);
 	coin.setPosition(1290, 590);
@@ -61,6 +62,8 @@ int main()
 	skeleton.setTextureRect(IntRect(0, 0, 150, 150));
 	skeleton.setScale(-1.5, 1.5);
 	skeleton.setPosition(1320, 550);
+	E.setPosition(1290, 500);
+	E.scale(1.6, 1.6);
 
 	float xKey = 0, yKey = 0, delayKey = 0.075;
 	float xCoin = 0, yCoin = 0, delayCoin = 0.065;
@@ -90,7 +93,7 @@ int main()
 
 
 
-	Text Menu[MENU_SIZE];
+	Text Menu[MENU_SIZE], win;
 
 	for (int i = 0; i < MENU_SIZE; i++)
 	{
@@ -100,6 +103,11 @@ int main()
 		Menu[i].setPosition((i == 0 ? 910 : 900), 400 + 200 * i);
 		Menu[i].setFillColor(Color::White);
 	}
+	win.setFont(font);
+	win.setCharacterSize(100);
+	win.setString("Level One Complete");
+	win.setPosition(560, 500);
+	win.setFillColor(Color::Red);
 
 	Text volumeb;
 	volumeb.setFont(font);
@@ -111,12 +119,11 @@ int main()
 	Music music;
 	music.openFromFile("Dame Tu Tormento.wav");
 	music.play();
-	music.setVolume(30);
 	music.setLoop(true);
 
 	int cnt = 0, select = 1;
 	float skeleton_attack_x = 0, skeleton_attack_y = 0, skeleton_attack_delay = 0.06;
-	bool started = false, paused = false, options_status = 0;
+	bool started = false, paused = false, options_status = 0, level_one_complete = 0;
 	bool keycollect = 0;
 	bool ok = false;
 	while (window.isOpen())
@@ -215,7 +222,7 @@ int main()
 
 
 
-		else if (started && !paused)
+		else if (started && !paused && !level_one_complete)
 		{
 			if (Keyboard::isKeyPressed(Keyboard::Key::Escape))
 				paused = 1;
@@ -237,6 +244,11 @@ int main()
 			xCoin += delayCoin;
 			if (xCoin >= 5)
 				xCoin = 0;
+
+			cout << skeleton.getPosition().x - player.getPosition().x << endl;
+			if (skeleton.getPosition().x - player.getPosition().x <= 330 && skeleton.getPosition().x - player.getPosition().x >= 0)
+				cout << '.';
+
 			if (skeleton.getGlobalBounds().intersects(player.getGlobalBounds()))
 			{
 				skeleton.setTexture(tskeleton[2]);
@@ -246,7 +258,7 @@ int main()
 					skeleton_attack_x = 0;
 			}
 			
-			if (Keyboard::isKeyPressed(Keyboard::Key::D) && !(Keyboard::isKeyPressed(Keyboard::Key::C))) {
+			if (Keyboard::isKeyPressed(Keyboard::Key::D) && !(Keyboard::isKeyPressed(Keyboard::Key::C)) && !(Keyboard::isKeyPressed(Keyboard::Key::K))) {
 				if (Keyboard::isKeyPressed(Keyboard::Key::Space) && isground == 1) {
 					jumpv = 8;
 					player.move(3.0f, 0);
@@ -260,7 +272,7 @@ int main()
 					player.setScale(2, 2);
 				}
 			}
-			else if (Keyboard::isKeyPressed(Keyboard::Key::A) && !(Keyboard::isKeyPressed(Keyboard::Key::C))) {
+			else if (Keyboard::isKeyPressed(Keyboard::Key::A) && !(Keyboard::isKeyPressed(Keyboard::Key::C) && !(Keyboard::isKeyPressed(Keyboard::Key::K)))) {
 				if (Keyboard::isKeyPressed(Keyboard::Key::Space) && isground == 1) {
 					jumpv = 8;
 					player.move(-3.0f, 0);
@@ -278,7 +290,7 @@ int main()
 			else if (Keyboard::isKeyPressed(Keyboard::Key::C) && Keyboard::isKeyPressed(Keyboard::Key::D)) {
 				player.setTextureRect(IntRect((short int)f * 120, 0, 1200 / 10, 80));
 				f += delay;
-				texture.loadFromFile("CrouchWalk.png");
+				texture.loadFromFile("_CrouchWalk.png");
 				player.move(0.5f, 0);
 				player.setScale(2, 2);
 				if (f > 7.9) {
@@ -289,7 +301,7 @@ int main()
 				player.setTextureRect(IntRect((short int)f * 120, 0, 1200 / 10, 80));
 
 				f += delay;
-				texture.loadFromFile("CrouchWalk.png");
+				texture.loadFromFile("_CrouchWalk.png");
 				player.move(-0.5f, 0);
 				player.setScale(-2, 2);
 				if (f > 7.9) {
@@ -303,6 +315,36 @@ int main()
 			else if (Keyboard::isKeyPressed(Keyboard::Key::Space) && isground == 1) {
 				jumpv = 8;
 				isground = 0;
+			}
+			else if (Keyboard::isKeyPressed(Keyboard::Key::D) && Keyboard::isKeyPressed(Keyboard::Key::K)) {
+				texture.loadFromFile("_AttackNoMovement.png");
+				player.setTextureRect(IntRect((short int)f * (480 / 4), 0, 480 / 4, 80));
+				player.move(2.0f, 0);
+				player.setScale(2, 2);
+				if(player.getGlobalBounds().intersects(skeleton.getGlobalBounds()))
+					skeleton.setScale(0, 0);
+				f += 0.06;
+				if (f > 3.9) {
+					f = 0;
+				}
+			}
+			else if (Keyboard::isKeyPressed(Keyboard::Key::A) && Keyboard::isKeyPressed(Keyboard::Key::K)) {
+				texture.loadFromFile("_AttackNoMovement.png");
+				player.setTextureRect(IntRect((short int)f * (480 / 4), 0, 480 / 4, 80));
+				player.move(-2.0f, 0);
+				player.setScale(-2, 2);
+				f += 0.06;
+				if (f > 3.9) {
+					f = 0;
+				}
+			}
+			else if (Keyboard::isKeyPressed(Keyboard::Key::K) && !(Keyboard::isKeyPressed(Keyboard::Key::D))) {
+				texture.loadFromFile("_AttackNoMovement.png");
+				player.setTextureRect(IntRect((short int)f * (480 / 4), 0, 480 / 4, 80));
+				f += 0.06;
+				if (f > 3.9) {
+					f = 0;
+				}
 			}
 			else {
 				texture.loadFromFile("_Idle.png");
@@ -377,12 +419,19 @@ int main()
 			window.draw(coin);
 			window.draw(skeleton);
 
-			if (player.getGlobalBounds().intersects(door.getGlobalBounds()) && keycollect == 1)
+			if (player.getGlobalBounds().intersects(door.getGlobalBounds()) && keycollect == 1) {
 				window.draw(door);
+				window.draw(E);
+				if (Keyboard::isKeyPressed(Keyboard::Key::E)) {
+					level_one_complete = 1;
+
+				}
+			}
+
 			window.draw(player);
 		}
 
-		else if (paused && started)
+		else if (paused && started && !level_one_complete)
 		{
 
 			if (options_status)
@@ -465,6 +514,9 @@ int main()
 				for (int i = 0; i < 3; i++)
 					window.draw(Menu[i]);
 			}
+		}
+		else if (level_one_complete) {
+			window.draw(win);
 		}
 		window.display();
 	}
