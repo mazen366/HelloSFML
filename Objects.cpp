@@ -41,7 +41,7 @@ int main()
 	Tkey.loadFromFile("key2.png");
 	Tcoin.loadFromFile("spinning coin2.png");
 	tbutton.loadFromFile("button_ui.png");
-	opendoor.loadFromFile("opened door.png");
+	opendoor.loadFromFile("opened_door.png");
 	tslider.loadFromFile("slider.png");
 
 
@@ -62,6 +62,7 @@ int main()
 	Sprite player(texture, IntRect(0, 0, 1200 / 10, 80));
 	player.setPosition(Vector2f(0, 500));
 	player.scale(2, 2);
+	player.setOrigin(Vector2f(player.getTextureRect().width / 2, player.getTextureRect().height / 2));
 	Sprite button[4];
 	for (int i = 0; i < 3; i++)
 	{
@@ -235,6 +236,7 @@ int main()
 					f += delay;
 					texture.loadFromFile("_Run.png");
 					player.move(2.0f, 0);
+					player.setScale(2, 2);
 				}
 			}
 			else if (Keyboard::isKeyPressed(Keyboard::Key::A) && !(Keyboard::isKeyPressed(Keyboard::Key::C))) {
@@ -244,12 +246,12 @@ int main()
 					isground = 0;
 				}
 				else {
-					g -= delay;
-					texture.loadFromFile("Runflip.png");
+					f += delay;
+					texture.loadFromFile("_Run.png");
+					player.setScale(-2, 2);
 					player.move(-2.0f, 0);
-					player.setTextureRect(IntRect((short int)g * 120, 0, 1200 / 10, 80));
-					if (g < 0.1)
-						g = 10;
+					player.setTextureRect(IntRect((short int)f * 120, 0, 1200 / 10, 80));
+
 				}
 			}
 			else if (Keyboard::isKeyPressed(Keyboard::Key::C) && Keyboard::isKeyPressed(Keyboard::Key::D)) {
@@ -257,18 +259,20 @@ int main()
 				f += delay;
 				texture.loadFromFile("CrouchWalk.png");
 				player.move(0.5f, 0);
+				player.setScale(2, 2);
 				if (f > 7.9) {
 					f = 0;
 				}
 			}
 			else if (Keyboard::isKeyPressed(Keyboard::Key::C) && Keyboard::isKeyPressed(Keyboard::Key::A)) {
-				player.setTextureRect(IntRect((short int)v * 120, 0, 1200 / 10, 80));
+				player.setTextureRect(IntRect((short int)f * 120, 0, 1200 / 10, 80));
 
-				v -= delay;
-				texture.loadFromFile("CrouchWalkflip.png");
+				f += delay;
+				texture.loadFromFile("CrouchWalk.png");
 				player.move(-0.5f, 0);
-				if (v < 0.1) {
-					v = 7.9;
+				player.setScale(-2, 2);
+				if (f > 7.9) {
+					f = 0;
 				}
 			}
 			else if (Keyboard::isKeyPressed(Keyboard::Key::C)) {
@@ -322,13 +326,15 @@ int main()
 					texture.loadFromFile("_Fall.png");
 					player.setTextureRect(IntRect((short int)f * 120, 0, 360 / 3, 80));
 					f += delay;
+					player.setScale(2, 2);
 					if (f > 2.9)
 						f = 0;
 				}
 				else if (Keyboard::isKeyPressed(Keyboard::Key::A)) {
-					texture.loadFromFile("Fallflip.png");
+					texture.loadFromFile("_Fall.png");
 					player.setTextureRect(IntRect((short int)f * 120, 0, 360 / 3, 80));
 					f += delay;
+					player.setScale(-2, 2);
 					if (f > 2.9)
 						f = 0;
 				}
