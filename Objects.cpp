@@ -5,6 +5,7 @@
 #define START_BUTTON 0
 #define OPTIONS_BUTTON 1
 #define EXIT_BUTTON 2
+ 
 
 using namespace std;
 using namespace sf;
@@ -36,22 +37,31 @@ int main()
 
 
 
-	Texture Tbackground, Tkey, Tcoin, tbutton, opendoor, tslider;
+	Texture Tbackground, Tkey, Tcoin, tbutton, opendoor, tslider, tskeleton[6];
 	Tbackground.loadFromFile("SFMLProject2.png");
 	Tkey.loadFromFile("key2.png");
 	Tcoin.loadFromFile("spinning coin2.png");
 	tbutton.loadFromFile("button_ui.png");
 	opendoor.loadFromFile("opened_door.png");
 	tslider.loadFromFile("slider.png");
+	tskeleton[0].loadFromFile("SkeletonIdle.png");
+	tskeleton[1].loadFromFile("SkeletonWalk.png");
+	tskeleton[2].loadFromFile("SkeletonAttack.png");
 
 
-	Sprite slider(tslider), background(Tbackground), key(Tkey, IntRect(0, 0, 39, 39)), coin(Tcoin, IntRect(0, 0, 26, 22)), door(opendoor);
+
+	Sprite skeleton, slider(tslider), background(Tbackground), key(Tkey, IntRect(0, 0, 39, 39)), coin(Tcoin, IntRect(0, 0, 26, 22)), door(opendoor);
 	background.setPosition(Vector2f(0, 250));
 	key.setPosition(790, 555);
 	coin.setPosition(1290, 590);
 	door.setPosition(1224.2, 530.4);
 	door.scale(2.14, 2.14);
 	slider.setPosition(850, 540);
+	skeleton.setTexture(tskeleton[0]);
+	skeleton.setTextureRect(IntRect(0, 0, 150, 150));
+	skeleton.setScale(-1.5, 1.5);
+	skeleton.setPosition(1320, 550);
+
 	float xKey = 0, yKey = 0, delayKey = 0.075;
 	float xCoin = 0, yCoin = 0, delayCoin = 0.065;
 	float f = 0, delay = 0.09f, g = 9.9, v = 7.9, jumpv = 0;
@@ -101,11 +111,14 @@ int main()
 	Music music;
 	music.openFromFile("Dame Tu Tormento.wav");
 	music.play();
+	music.setVolume(30);
 	music.setLoop(true);
 
 	int cnt = 0, select = 1;
+	float skeleton_attack_x = 0, skeleton_attack_y = 0, skeleton_attack_delay = 0.06;
 	bool started = false, paused = false, options_status = 0;
 	bool keycollect = 0;
+	bool ok = false;
 	while (window.isOpen())
 	{
 
@@ -224,7 +237,15 @@ int main()
 			xCoin += delayCoin;
 			if (xCoin >= 5)
 				xCoin = 0;
-
+			if (skeleton.getGlobalBounds().intersects(player.getGlobalBounds()))
+			{
+				skeleton.setTexture(tskeleton[2]);
+				skeleton.setTextureRect(IntRect(short(skeleton_attack_x) * 150, 0, 150, 150));
+				skeleton_attack_x += skeleton_attack_delay;
+				if (skeleton_attack_x >= 7.9)
+					skeleton_attack_x = 0;
+			}
+			
 			if (Keyboard::isKeyPressed(Keyboard::Key::D) && !(Keyboard::isKeyPressed(Keyboard::Key::C))) {
 				if (Keyboard::isKeyPressed(Keyboard::Key::Space) && isground == 1) {
 					jumpv = 8;
@@ -354,6 +375,7 @@ int main()
 			window.draw(background);
 			window.draw(key);
 			window.draw(coin);
+			window.draw(skeleton);
 
 			if (player.getGlobalBounds().intersects(door.getGlobalBounds()) && keycollect == 1)
 				window.draw(door);
