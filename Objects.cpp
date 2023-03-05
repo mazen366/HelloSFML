@@ -341,7 +341,6 @@ int main()
 				}
 
 			}
-			//reset value
 			if (f > 9.9) {
 				f = 0;
 			}
@@ -430,6 +429,7 @@ int main()
 				window.draw(background);
 				window.draw(key);
 				window.draw(coin);
+				window.draw(player);
 
 
 				for (int i = 0; i < 3; i++)
