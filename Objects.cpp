@@ -5,39 +5,43 @@
 #define START_BUTTON 0
 #define OPTIONS_BUTTON 1
 #define EXIT_BUTTON 2
- 
-
 using namespace std;
 using namespace sf;
 
-int main()
+Music music;
+
+string options[MENU_SIZE] = { "START", "OPTIONS", "EXIT" };
+
+Texture Tbackground, Tkey, Tcoin, tbutton, opendoor, tslider, tskeleton[6], Ebutton, Tplayer, texture;
+Sprite skeleton, slider, background, key, coin, door, E, player, button[4];
+
+Font font;
+Text Menu[MENU_SIZE], win, volumeb;
+
+RectangleShape ground1, ground2, ground3, ground4, volume;
+
+RenderWindow window(VideoMode(1920, 1080), "SFML");
+
+void objects_position()
 {
-	string options[MENU_SIZE] = { "START", "OPTIONS", "EXIT" };
-
-
-
-	RenderWindow window(VideoMode(1920, 1080), "SFML");
-	window.setFramerateLimit(120);
-
-	RectangleShape ground1(Vector2f(450, 150));
+	ground1.setSize(Vector2f(450, 150));
 	ground1.setPosition(0, 696);
 
-	RectangleShape ground2(Vector2f(205, 100));
+	ground2.setSize(Vector2f(205, 100));
 	ground2.setPosition(653, 593);
 
-	RectangleShape ground3(Vector2f(955, 100));
+	ground3.setSize(Vector2f(955, 100));
 	ground3.setPosition(960, 710);
 
-	RectangleShape ground4(Vector2f(35, 70));
+	ground4.setSize(Vector2f(35, 70));
 	ground4.setPosition(617, 635);
-	ground4.setFillColor(Color::Green);
 
-	RectangleShape volume(Vector2f(200, 20));
+	volume.setSize(Vector2f(200, 20));
 	volume.setPosition(850, 540);
+}
 
-
-
-	Texture Tbackground, Tkey, Tcoin, tbutton, opendoor, tslider, tskeleton[6], Ebutton;
+void set_texture()
+{
 	Tbackground.loadFromFile("SFMLProject2.png");
 	Tkey.loadFromFile("key2.png");
 	Tcoin.loadFromFile("spinning coin2.png");
@@ -48,35 +52,43 @@ int main()
 	tskeleton[1].loadFromFile("SkeletonWalk.png");
 	tskeleton[2].loadFromFile("SkeletonAttack.png");
 	Ebutton.loadFromFile("E.png");
+}
 
-
-
-	Sprite skeleton, slider(tslider), background(Tbackground), key(Tkey, IntRect(0, 0, 39, 39)), coin(Tcoin, IntRect(0, 0, 26, 22)), door(opendoor), E(Ebutton);
+void set_sprite()
+{
+	background.setTexture(Tbackground);
 	background.setPosition(Vector2f(0, 250));
+
+	key.setTexture(Tkey);
+	key.setTextureRect(IntRect(0, 0, 39, 39));
 	key.setPosition(790, 555);
+
+	coin.setTexture(Tcoin);
 	coin.setPosition(1290, 590);
+	coin.setTextureRect(IntRect(0, 0, 26, 22));
+
+	door.setTexture(opendoor);
 	door.setPosition(1224.2, 530.4);
 	door.scale(2.14, 2.14);
+
+	slider.setTexture(tslider);
 	slider.setPosition(850, 540);
+
 	skeleton.setTexture(tskeleton[0]);
 	skeleton.setTextureRect(IntRect(0, 0, 150, 150));
 	skeleton.setScale(-1.5, 1.5);
 	skeleton.setPosition(1320, 550);
+
+	E.setTexture(Ebutton);
 	E.setPosition(1290, 500);
 	E.scale(1.6, 1.6);
 
-	float xKey = 0, yKey = 0, delayKey = 0.075;
-	float xCoin = 0, yCoin = 0, delayCoin = 0.065;
-	float f = 0, delay = 0.09f, g = 9.9, v = 7.9, jumpv = 0;
-	bool isground = 0;
-
-	Clock time;
-	Texture texture;
-	Sprite player(texture, IntRect(0, 0, 1200 / 10, 80));
+	player.setTexture(texture);
+	player.setTextureRect(IntRect(0, 0, 1200 / 10, 80));
 	player.setPosition(Vector2f(0, 500));
 	player.scale(2, 2);
 	player.setOrigin(Vector2f(player.getTextureRect().width / 2, player.getTextureRect().height / 2));
-	Sprite button[4];
+
 	for (int i = 0; i < 3; i++)
 	{
 		button[i].setTexture(tbutton);
@@ -87,14 +99,15 @@ int main()
 	button[3].setTexture(tbutton);
 	button[3].setScale(2, 2);
 	button[3].setPosition(400, 520);
+}
 
-	Font font;
+void set_font()
+{
 	font.loadFromFile("Nightmare_Before_Christmas.ttf");
+}
 
-
-
-	Text Menu[MENU_SIZE], win;
-
+void set_text()
+{
 	for (int i = 0; i < MENU_SIZE; i++)
 	{
 		Menu[i].setFont(font);
@@ -109,17 +122,67 @@ int main()
 	win.setPosition(560, 500);
 	win.setFillColor(Color::Red);
 
-	Text volumeb;
 	volumeb.setFont(font);
 	volumeb.setCharacterSize(60);
 	volumeb.setString("VOLUME");
 	volumeb.setPosition(435, 520);
 	volumeb.setFillColor(Color::Green);
 
-	Music music;
+}
+
+void set_music()
+{
 	music.openFromFile("Dame Tu Tormento.wav");
 	music.play();
 	music.setLoop(true);
+}
+
+void set_window()
+{
+	window.setFramerateLimit(120);
+}
+
+void set_movement()
+{
+
+}
+
+void collision()
+{
+
+}
+
+void gravity()
+{
+
+}
+
+void animation()
+{
+
+}
+
+void player_animation()
+{
+
+}
+
+int main()
+{
+	set_window();
+	objects_position();
+	set_texture();
+	set_sprite();
+	set_font();
+	set_text();
+	set_music();
+
+	float xKey = 0, yKey = 0, delayKey = 0.075;
+	float xCoin = 0, yCoin = 0, delayCoin = 0.065;
+	float f = 0, delay = 0.09f, g = 9.9, v = 7.9, jumpv = 0;
+	bool isground = 0;
+
+	Clock time;
 
 	int cnt = 0, select = 1;
 	float skeleton_attack_x = 0, skeleton_attack_y = 0, skeleton_attack_delay = 0.06;
@@ -244,10 +307,6 @@ int main()
 			xCoin += delayCoin;
 			if (xCoin >= 5)
 				xCoin = 0;
-
-			cout << skeleton.getPosition().x - player.getPosition().x << endl;
-			if (skeleton.getPosition().x - player.getPosition().x <= 330 && skeleton.getPosition().x - player.getPosition().x >= 0)
-				cout << '.';
 
 			if (skeleton.getGlobalBounds().intersects(player.getGlobalBounds()))
 			{
