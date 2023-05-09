@@ -38,7 +38,7 @@ struct player
 	void player_movement() 
 	{
 		player_sprite.setOrigin(Vector2f(player_sprite.getTextureRect().width / 2, player_sprite.getTextureRect().height / 2));
-		rec.setPosition(player_sprite.getPosition().x-40,player_sprite.getPosition().y);
+		rec.setPosition(player_sprite.getPosition().x-40,player_sprite.getPosition().y+5);
 		if (Keyboard::isKeyPressed(Keyboard::Key::D) && !(Keyboard::isKeyPressed(Keyboard::Key::C)) && !(Keyboard::isKeyPressed(Keyboard::Key::K))) {
 			if (Keyboard::isKeyPressed(Keyboard::Key::Space) && isground == 1) {
 				jumpv = 8;
@@ -145,10 +145,10 @@ struct player
 			jumpv = 0;
 			player_clock.restart();
 		}
-		if (player_sprite.getGlobalBounds().intersects(ground1.getGlobalBounds()) ||
-			player_sprite.getGlobalBounds().intersects(ground2.getGlobalBounds()) ||
-			player_sprite.getGlobalBounds().intersects(ground3.getGlobalBounds()) ||
-			player_sprite.getGlobalBounds().intersects(ground4.getGlobalBounds())) {
+		if (rec.getGlobalBounds().intersects(ground1.getGlobalBounds()) ||
+			rec.getGlobalBounds().intersects(ground2.getGlobalBounds()) ||
+			rec.getGlobalBounds().intersects(ground3.getGlobalBounds()) ||
+			rec.getGlobalBounds().intersects(ground4.getGlobalBounds())) {
 			player_sprite.setPosition(player_sprite.getPosition().x, player_sprite.getPosition().y - 0.001);
 			isground = 1;
 		}
@@ -289,7 +289,7 @@ void set_sprite()
 	player.player_sprite.setPosition(Vector2f(0, 500));
 	player.player_sprite.scale(2, 2);
 	player.player_sprite.setOrigin(Vector2f(player.player_sprite.getTextureRect().width / 2, player.player_sprite.getTextureRect().height / 2));
-	player.rec.setSize(Vector2f(60, 80));
+	player.rec.setSize(Vector2f(60, 75));
 	for (int i = 0; i < 3; i++)
 	{
 		button[i].setTexture(tbutton);
