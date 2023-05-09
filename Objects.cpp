@@ -8,12 +8,15 @@
 using namespace std;
 using namespace sf;
 
+Sprite animation[30];
+
 Music music;
 
 string options[MENU_SIZE] = { "START", "OPTIONS", "EXIT" };
 
-Texture Tbackground, Tkey, Tcoin, tbutton, opendoor, tslider, tskeleton[6], Ebutton, Tplayer, texture;
-Sprite skeleton, slider, background, key, coin, door, E, player, button[4];
+Texture Tbackground, Tkey, Tcoin, tbutton, opendoor, tslider, tskeleton[6], Ebutton, Tplayer, texture, player_run_tex, player_fall_tex, player_crouch_tex, player_attck_tex,
+player_jump_tex, player_crouch_walk_tex, player_idle_tex, player_attack_tex;
+Sprite slider, background, key, coin, door, E,button[4];
 
 Font font;
 Text Menu[MENU_SIZE], win, volumeb;
@@ -22,6 +25,191 @@ RectangleShape ground1, ground2, ground3, ground4, volume;
 
 RenderWindow window(VideoMode(1920, 1080), "SFML");
 
+float xKey = 0, yKey = 0, delayKey = 0.075, xCoin = 0, yCoin = 0, delayCoin = 0.065, f = 0, delay = 0.09f, g = 9.9, v = 7.9, jumpv = 0, 
+skeleton_attack_x = 0, skeleton_attack_y = 0, skeleton_attack_delay = 0.06;
+bool isground = 0, started = false, paused = false, options_status = 0, level_one_complete = 0, keycollect = 0, ok = false;
+int cnt = 0, select = 1;  
+struct player
+{
+	int health = 100;
+	Sprite player_sprite;
+	Clock player_clock;
+	RectangleShape rec;
+	void player_movement() 
+	{
+		player_sprite.setOrigin(Vector2f(player_sprite.getTextureRect().width / 2, player_sprite.getTextureRect().height / 2));
+		rec.setPosition(player_sprite.getPosition().x-40,player_sprite.getPosition().y);
+		if (Keyboard::isKeyPressed(Keyboard::Key::D) && !(Keyboard::isKeyPressed(Keyboard::Key::C)) && !(Keyboard::isKeyPressed(Keyboard::Key::K))) {
+			if (Keyboard::isKeyPressed(Keyboard::Key::Space) && isground == 1) {
+				jumpv = 8;
+				player_sprite.move(3.0f, 0);
+				isground = 0;
+			}
+			else {
+				player_sprite.setTexture(player_run_tex);
+				player_sprite.setTextureRect(IntRect((short int)f * 120, 0, 1200 / 10, 80));
+				f += delay;
+				player_sprite.move(2.0f, 0);
+				player_sprite.setScale(2, 2);
+			}
+		}
+		else if (Keyboard::isKeyPressed(Keyboard::Key::A) && !(Keyboard::isKeyPressed(Keyboard::Key::C) && !(Keyboard::isKeyPressed(Keyboard::Key::K)))) {
+			if (Keyboard::isKeyPressed(Keyboard::Key::Space) && isground == 1) {
+				jumpv = 8;
+				player_sprite.move(-3.0f, 0);
+				isground = 0;
+			}
+			else {
+				f += delay;
+				player_sprite.setTexture(player_run_tex);
+				player_sprite.setScale(-2, 2);
+				player_sprite.move(-2.0f, 0);
+				player_sprite.setTextureRect(IntRect((short int)f * 120, 0, 1200 / 10, 80));
+
+			}
+		}
+		else if (Keyboard::isKeyPressed(Keyboard::Key::C) && Keyboard::isKeyPressed(Keyboard::Key::D)) {
+			player_sprite.setTextureRect(IntRect((short int)f * 120, 0, 1200 / 10, 80));
+			f += delay;
+			player_sprite.setTexture(player_crouch_walk_tex);
+			player_sprite.move(0.5f, 0);
+			player_sprite.setScale(2, 2);
+			if (f > 7.9) {
+				f = 0;
+			}
+		}
+		else if (Keyboard::isKeyPressed(Keyboard::Key::C) && Keyboard::isKeyPressed(Keyboard::Key::A)) {
+			player_sprite.setTextureRect(IntRect((short int)f * 120, 0, 1200 / 10, 80));
+
+			f += delay;
+			player_sprite.setTexture(player_crouch_walk_tex);
+			player_sprite.move(-0.5f, 0);
+			player_sprite.setScale(-2, 2);
+			if (f > 7.9) {
+				f = 0;
+			}
+		}
+		else if (Keyboard::isKeyPressed(Keyboard::Key::C)) {
+			player_sprite.setTexture(player_crouch_tex);
+			player_sprite.setTextureRect(IntRect((short int)0, 0, 1200 / 10, 80));
+		}
+		else if (Keyboard::isKeyPressed(Keyboard::Key::Space) && isground == 1) {
+			jumpv = 8;
+			isground = 0;
+		}
+		else if (Keyboard::isKeyPressed(Keyboard::Key::D) && Keyboard::isKeyPressed(Keyboard::Key::K)) {
+						player_sprite.setTexture(player_attack_tex);
+			player_sprite.setTextureRect(IntRect((short int)f * (480 / 4), 0, 480 / 4, 80));
+			player_sprite.move(2.0f, 0);
+			player_sprite.setScale(2, 2);
+			//if (player_sprite.getGlobalBounds().intersects(skeleton.getGlobalBounds()))
+			//	skeleton.setScale(0, 0);
+			f += 0.06;
+			if (f > 3.9) {
+				f = 0;
+			}
+		}
+		else if (Keyboard::isKeyPressed(Keyboard::Key::A) && Keyboard::isKeyPressed(Keyboard::Key::K)) {
+			player_sprite.setTexture(player_attack_tex);
+			player_sprite.setTextureRect(IntRect((short int)f * (480 / 4), 0, 480 / 4, 80));
+			player_sprite.move(-2.0f, 0);
+			player_sprite.setScale(-2, 2);
+			f += 0.06;
+			if (f > 3.9) {
+				f = 0;
+			}
+		}
+		else if (Keyboard::isKeyPressed(Keyboard::Key::K) && !(Keyboard::isKeyPressed(Keyboard::Key::D))) {
+			player_sprite.setTexture(player_attack_tex);
+			player_sprite.setTextureRect(IntRect((short int)f * (480 / 4), 0, 480 / 4, 80));
+			f += 0.06;
+			if (f > 3.9) {
+				f = 0;
+			}
+		}
+		else {
+			player_sprite.setTexture(player_idle_tex);
+			player_sprite.setTextureRect(IntRect((short int)f * 120, 0, 1200 / 10, 80));
+			f += delay;
+		}
+		if (jumpv > 0) {
+			player_sprite.setPosition(player_sprite.getPosition().x, player_sprite.getPosition().y - 10.2f);
+			jumpv -= 4.8 * player_clock.getElapsedTime().asSeconds();
+			player_sprite.setTexture(player_jump_tex);
+			player_sprite.setTextureRect(IntRect((short int)f * 120, 0, 360 / 3, 80));
+			f += delay;
+			if (f > 2.9)
+				f = 0;
+		}
+		else {
+			jumpv = 0;
+			player_clock.restart();
+		}
+		if (player_sprite.getGlobalBounds().intersects(ground1.getGlobalBounds()) ||
+			player_sprite.getGlobalBounds().intersects(ground2.getGlobalBounds()) ||
+			player_sprite.getGlobalBounds().intersects(ground3.getGlobalBounds()) ||
+			player_sprite.getGlobalBounds().intersects(ground4.getGlobalBounds())) {
+			player_sprite.setPosition(player_sprite.getPosition().x, player_sprite.getPosition().y - 0.001);
+			isground = 1;
+		}
+
+		else if (jumpv <= 0) {
+			isground = 0;
+			player_sprite.setPosition(player_sprite.getPosition().x, player_sprite.getPosition().y + 4.8);
+			if (Keyboard::isKeyPressed(Keyboard::Key::D)) {
+				player_sprite.setTexture(player_fall_tex);
+				player_sprite.setTextureRect(IntRect((short int)f * 120, 0, 360 / 3, 80));
+				f += delay;
+				player_sprite.setScale(2, 2);
+				if (f > 2.9)
+					f = 0;
+			}
+			else if (Keyboard::isKeyPressed(Keyboard::Key::A)) {
+				player_sprite.setTexture(player_fall_tex);
+				player_sprite.setTextureRect(IntRect((short int)f * 120, 0, 360 / 3, 80));
+				f += delay;
+				player_sprite.setScale(-2, 2);
+				if (f > 2.9)
+					f = 0;
+			}
+			else {
+				player_sprite.setTexture(player_fall_tex);
+				player_sprite.setTextureRect(IntRect((short int)f * 120, 0, 360 / 3, 80));
+				f += delay;
+				if (f > 2.9)
+					f = 0;
+			}
+
+		}
+		if (f > 9.9) {
+			f = 0;
+		}
+	}
+}player;
+
+
+struct Skeleton
+{
+	int health = 100;
+	int last_key_pressed = 1;//1 --> Right || 0 --> left
+	Texture skeletonT;
+	Sprite skeletonS;
+	void setup_enemy(Skeleton skeleton[])
+	{
+		skeletonT.loadFromFile("SkeletonIdle.png");
+		for (int i = 0;i<10;i++)
+		{
+			skeleton[i].skeletonS.setTexture(skeletonT);
+		}
+	}
+	void Enemy_movment()
+	{
+		//if (player.player_sprite.getPosition().x < skeleton.getPosition().x)
+		//{
+
+		//}
+	}
+}skeleton[10];
 void objects_position()
 {
 	ground1.setSize(Vector2f(450, 150));
@@ -40,6 +228,11 @@ void objects_position()
 	volume.setPosition(850, 540);
 }
 
+//void animation(int index ,int frame,int leftrect,int rightrect,float delay)
+//{
+//
+//}
+
 void set_texture()
 {
 	Tbackground.loadFromFile("SFMLProject2.png");
@@ -48,10 +241,20 @@ void set_texture()
 	tbutton.loadFromFile("button_ui.png");
 	opendoor.loadFromFile("opened_door.png");
 	tslider.loadFromFile("slider.png");
+
 	tskeleton[0].loadFromFile("SkeletonIdle.png");
 	tskeleton[1].loadFromFile("SkeletonWalk.png");
 	tskeleton[2].loadFromFile("SkeletonAttack.png");
+
 	Ebutton.loadFromFile("E.png");
+
+	player_idle_tex.loadFromFile("_Idle.png");
+	player_fall_tex.loadFromFile("_Fall.png");
+	player_jump_tex.loadFromFile("Jump.png");
+	player_attack_tex.loadFromFile("_AttackNoMovement.png");
+	player_crouch_tex.loadFromFile("Crouch.png");
+	player_crouch_walk_tex.loadFromFile("_CrouchWalk.png");
+	player_run_tex.loadFromFile("_Run.png");
 }
 
 void set_sprite()
@@ -74,21 +277,19 @@ void set_sprite()
 	slider.setTexture(tslider);
 	slider.setPosition(850, 540);
 
-	skeleton.setTexture(tskeleton[0]);
-	skeleton.setTextureRect(IntRect(0, 0, 150, 150));
-	skeleton.setScale(-1.5, 1.5);
-	skeleton.setPosition(1320, 550);
+	//skeleton.setTexture(tskeleton[0]);
+	//skeleton.setTextureRect(IntRect(0, 0, 150, 150));
+	//skeleton.setScale(-1.5, 1.5);
+	//skeleton.setPosition(1320, 550);
 
 	E.setTexture(Ebutton);
 	E.setPosition(1290, 500);
 	E.scale(1.6, 1.6);
 
-	player.setTexture(texture);
-	player.setTextureRect(IntRect(0, 0, 1200 / 10, 80));
-	player.setPosition(Vector2f(0, 500));
-	player.scale(2, 2);
-	player.setOrigin(Vector2f(player.getTextureRect().width / 2, player.getTextureRect().height / 2));
-
+	player.player_sprite.setPosition(Vector2f(0, 500));
+	player.player_sprite.scale(2, 2);
+	player.player_sprite.setOrigin(Vector2f(player.player_sprite.getTextureRect().width / 2, player.player_sprite.getTextureRect().height / 2));
+	player.rec.setSize(Vector2f(60, 80));
 	for (int i = 0; i < 3; i++)
 	{
 		button[i].setTexture(tbutton);
@@ -156,12 +357,6 @@ void gravity()
 {
 
 }
-
-void animation()
-{
-
-}
-
 void player_animation()
 {
 
@@ -177,18 +372,6 @@ int main()
 	set_text();
 	set_music();
 
-	float xKey = 0, yKey = 0, delayKey = 0.075;
-	float xCoin = 0, yCoin = 0, delayCoin = 0.065;
-	float f = 0, delay = 0.09f, g = 9.9, v = 7.9, jumpv = 0;
-	bool isground = 0;
-
-	Clock time;
-
-	int cnt = 0, select = 1;
-	float skeleton_attack_x = 0, skeleton_attack_y = 0, skeleton_attack_delay = 0.06;
-	bool started = false, paused = false, options_status = 0, level_one_complete = 0;
-	bool keycollect = 0;
-	bool ok = false;
 	while (window.isOpen())
 	{
 
@@ -287,6 +470,7 @@ int main()
 
 		else if (started && !paused && !level_one_complete)
 		{
+			player.player_movement();
 			if (Keyboard::isKeyPressed(Keyboard::Key::Escape))
 				paused = 1;
 
@@ -308,177 +492,34 @@ int main()
 			if (xCoin >= 5)
 				xCoin = 0;
 
-			if (skeleton.getGlobalBounds().intersects(player.getGlobalBounds()))
+			/*if (skeleton.getGlobalBounds().intersects(player.player_sprite.getGlobalBounds()))
 			{
 				skeleton.setTexture(tskeleton[2]);
 				skeleton.setTextureRect(IntRect(short(skeleton_attack_x) * 150, 0, 150, 150));
 				skeleton_attack_x += skeleton_attack_delay;
 				if (skeleton_attack_x >= 7.9)
 					skeleton_attack_x = 0;
-			}
+			}*/
 			
-			if (Keyboard::isKeyPressed(Keyboard::Key::D) && !(Keyboard::isKeyPressed(Keyboard::Key::C)) && !(Keyboard::isKeyPressed(Keyboard::Key::K))) {
-				if (Keyboard::isKeyPressed(Keyboard::Key::Space) && isground == 1) {
-					jumpv = 8;
-					player.move(3.0f, 0);
-					isground = 0;
-				}
-				else {
-					player.setTextureRect(IntRect((short int)f * 120, 0, 1200 / 10, 80));
-					f += delay;
-					texture.loadFromFile("_Run.png");
-					player.move(2.0f, 0);
-					player.setScale(2, 2);
-				}
-			}
-			else if (Keyboard::isKeyPressed(Keyboard::Key::A) && !(Keyboard::isKeyPressed(Keyboard::Key::C) && !(Keyboard::isKeyPressed(Keyboard::Key::K)))) {
-				if (Keyboard::isKeyPressed(Keyboard::Key::Space) && isground == 1) {
-					jumpv = 8;
-					player.move(-3.0f, 0);
-					isground = 0;
-				}
-				else {
-					f += delay;
-					texture.loadFromFile("_Run.png");
-					player.setScale(-2, 2);
-					player.move(-2.0f, 0);
-					player.setTextureRect(IntRect((short int)f * 120, 0, 1200 / 10, 80));
-
-				}
-			}
-			else if (Keyboard::isKeyPressed(Keyboard::Key::C) && Keyboard::isKeyPressed(Keyboard::Key::D)) {
-				player.setTextureRect(IntRect((short int)f * 120, 0, 1200 / 10, 80));
-				f += delay;
-				texture.loadFromFile("_CrouchWalk.png");
-				player.move(0.5f, 0);
-				player.setScale(2, 2);
-				if (f > 7.9) {
-					f = 0;
-				}
-			}
-			else if (Keyboard::isKeyPressed(Keyboard::Key::C) && Keyboard::isKeyPressed(Keyboard::Key::A)) {
-				player.setTextureRect(IntRect((short int)f * 120, 0, 1200 / 10, 80));
-
-				f += delay;
-				texture.loadFromFile("_CrouchWalk.png");
-				player.move(-0.5f, 0);
-				player.setScale(-2, 2);
-				if (f > 7.9) {
-					f = 0;
-				}
-			}
-			else if (Keyboard::isKeyPressed(Keyboard::Key::C)) {
-				texture.loadFromFile("Crouch.png");
-				player.setTextureRect(IntRect((short int)0, 0, 1200 / 10, 80));
-			}
-			else if (Keyboard::isKeyPressed(Keyboard::Key::Space) && isground == 1) {
-				jumpv = 8;
-				isground = 0;
-			}
-			else if (Keyboard::isKeyPressed(Keyboard::Key::D) && Keyboard::isKeyPressed(Keyboard::Key::K)) {
-				texture.loadFromFile("_AttackNoMovement.png");
-				player.setTextureRect(IntRect((short int)f * (480 / 4), 0, 480 / 4, 80));
-				player.move(2.0f, 0);
-				player.setScale(2, 2);
-				if(player.getGlobalBounds().intersects(skeleton.getGlobalBounds()))
-					skeleton.setScale(0, 0);
-				f += 0.06;
-				if (f > 3.9) {
-					f = 0;
-				}
-			}
-			else if (Keyboard::isKeyPressed(Keyboard::Key::A) && Keyboard::isKeyPressed(Keyboard::Key::K)) {
-				texture.loadFromFile("_AttackNoMovement.png");
-				player.setTextureRect(IntRect((short int)f * (480 / 4), 0, 480 / 4, 80));
-				player.move(-2.0f, 0);
-				player.setScale(-2, 2);
-				f += 0.06;
-				if (f > 3.9) {
-					f = 0;
-				}
-			}
-			else if (Keyboard::isKeyPressed(Keyboard::Key::K) && !(Keyboard::isKeyPressed(Keyboard::Key::D))) {
-				texture.loadFromFile("_AttackNoMovement.png");
-				player.setTextureRect(IntRect((short int)f * (480 / 4), 0, 480 / 4, 80));
-				f += 0.06;
-				if (f > 3.9) {
-					f = 0;
-				}
-			}
-			else {
-				texture.loadFromFile("_Idle.png");
-				player.setTextureRect(IntRect((short int)f * 120, 0, 1200 / 10, 80));
-				f += delay;
-			}
-			if (player.getGlobalBounds().intersects(coin.getGlobalBounds())) {
+			
+			if (player.player_sprite.getGlobalBounds().intersects(coin.getGlobalBounds())) {
 				coin.setPosition(Vector2f(10000, 10000));
 			}
 
-			if (player.getGlobalBounds().intersects(key.getGlobalBounds())) {
+			if (player.player_sprite.getGlobalBounds().intersects(key.getGlobalBounds())) {
 				keycollect = 1;
 				key.setPosition(Vector2f(10000, 10000));
 			}
 
 
-			if (jumpv > 0) {
-				player.setPosition(player.getPosition().x, player.getPosition().y - 10.2f);
-				jumpv -= 4.8 * time.getElapsedTime().asSeconds();
-				texture.loadFromFile("Jump.png");
-				player.setTextureRect(IntRect((short int)f * 120, 0, 360 / 3, 80));
-				f += delay;
-				if (f > 2.9)
-					f = 0;
-			}
-			else {
-				jumpv = 0;
-				time.restart();
-			}
-			if (player.getGlobalBounds().intersects(ground1.getGlobalBounds()) ||
-				player.getGlobalBounds().intersects(ground2.getGlobalBounds()) ||
-				player.getGlobalBounds().intersects(ground3.getGlobalBounds()) ||
-				player.getGlobalBounds().intersects(ground4.getGlobalBounds())) {
-				player.setPosition(player.getPosition().x, player.getPosition().y - 0.001);
-				isground = 1;
-			}
 
-			else if (jumpv <= 0) {
-				isground = 0;
-				player.setPosition(player.getPosition().x, player.getPosition().y + 4.8);
-				if (Keyboard::isKeyPressed(Keyboard::Key::D)) {
-					texture.loadFromFile("_Fall.png");
-					player.setTextureRect(IntRect((short int)f * 120, 0, 360 / 3, 80));
-					f += delay;
-					player.setScale(2, 2);
-					if (f > 2.9)
-						f = 0;
-				}
-				else if (Keyboard::isKeyPressed(Keyboard::Key::A)) {
-					texture.loadFromFile("_Fall.png");
-					player.setTextureRect(IntRect((short int)f * 120, 0, 360 / 3, 80));
-					f += delay;
-					player.setScale(-2, 2);
-					if (f > 2.9)
-						f = 0;
-				}
-				else {
-					texture.loadFromFile("_Fall.png");
-					player.setTextureRect(IntRect((short int)f * 120, 0, 360 / 3, 80));
-					f += delay;
-					if (f > 2.9)
-						f = 0;
-				}
-
-			}
-			if (f > 9.9) {
-				f = 0;
-			}
 
 			window.draw(background);
 			window.draw(key);
 			window.draw(coin);
-			window.draw(skeleton);
+			//window.draw(skeleton);
 
-			if (player.getGlobalBounds().intersects(door.getGlobalBounds()) && keycollect == 1) {
+			if (player.player_sprite.getGlobalBounds().intersects(door.getGlobalBounds()) && keycollect == 1) {
 				window.draw(door);
 				window.draw(E);
 				if (Keyboard::isKeyPressed(Keyboard::Key::E)) {
@@ -486,8 +527,8 @@ int main()
 
 				}
 			}
-
-			window.draw(player);
+			window.draw(player.rec);
+			window.draw(player.player_sprite);
 		}
 
 		else if (paused && started && !level_one_complete)
@@ -565,7 +606,7 @@ int main()
 				window.draw(background);
 				window.draw(key);
 				window.draw(coin);
-				window.draw(player);
+				window.draw(player.player_sprite);
 
 
 				for (int i = 0; i < 3; i++)
